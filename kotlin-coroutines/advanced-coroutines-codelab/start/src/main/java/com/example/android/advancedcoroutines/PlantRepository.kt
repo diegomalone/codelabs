@@ -25,6 +25,7 @@ import com.example.android.advancedcoroutines.util.CacheOnSuccess
 import com.example.android.advancedcoroutines.utils.ComparablePair
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
 /**
@@ -50,15 +51,25 @@ class PlantRepository private constructor(
         val plantsLiveData = plantDao.getPlants()
         val customSortOrder = plantsListSortOrderCache.getOrAwait()
 
-        emitSource(plantsLiveData.map {
-            plantList -> plantList.applySort(customSortOrder)
+        emitSource(plantsLiveData.map { plantList ->
+            plantList.applySort(customSortOrder)
         })
     }
 
+    val plantsFlow: Flow<List<Plant>>
+        get() = plantDao.getPlantsFlow()
+            .combine(customSortFlow) { plants, sortOrder ->
+                plants.applySort(sortOrder)
+            }
+            .flowOn(defaultDispatcher)
+            .conflate()
+
     private var plantsListSortOrderCache =
-        CacheOnSuccess(onErrorFallback = { listOf<String>()}) {
+        CacheOnSuccess(onErrorFallback = { listOf<String>() }) {
             plantService.customPlantSortOrder()
         }
+
+    private val customSortFlow = flow { emit(plantsListSortOrderCache.getOrAwait()) }
 
     /**
      * Fetch a list of [Plant]s from the database that matches a given [GrowZone].
@@ -66,12 +77,21 @@ class PlantRepository private constructor(
      */
     fun getPlantsWithGrowZone(growZone: GrowZone) =
         plantDao.getPlantsWithGrowZoneNumber((growZone.number))
-            .switchMap {plantList ->
+            .switchMap { plantList ->
                 liveData {
                     val customSortOrder = plantsListSortOrderCache.getOrAwait()
                     emit(plantList.applyMainSafeSort(customSortOrder))
                 }
             }
+
+    fun getPlantsWithGrowZoneFlow(growZone: GrowZone): Flow<List<Plant>> {
+        return plantDao.getPlantsWithGrowZoneNumberFlow(growZone.number)
+            .map { plantList ->
+                val sortOrderFromNetwork = plantsListSortOrderCache.getOrAwait()
+                val nextValue = plantList.applyMainSafeSort(sortOrderFromNetwork)
+                nextValue
+            }
+    }
 
     @AnyThread
     suspend fun List<Plant>.applyMainSafeSort(customSortOrder: List<String>) =
@@ -135,7 +155,8 @@ class PlantRepository private constructor(
     companion object {
 
         // For Singleton instantiation
-        @Volatile private var instance: PlantRepository? = null
+        @Volatile
+        private var instance: PlantRepository? = null
 
         fun getInstance(plantDao: PlantDao, plantService: NetworkService) =
             instance ?: synchronized(this) {
