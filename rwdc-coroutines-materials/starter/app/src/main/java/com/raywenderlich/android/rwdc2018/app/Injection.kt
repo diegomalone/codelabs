@@ -31,6 +31,7 @@
 
 package com.raywenderlich.android.rwdc2018.app
 
+import android.arch.lifecycle.Lifecycle
 import com.raywenderlich.android.rwdc2018.repository.PhotosRepository
 import com.raywenderlich.android.rwdc2018.repository.Repository
 import com.raywenderlich.android.rwdc2018.ui.photos.PhotosViewModelFactory
@@ -42,8 +43,9 @@ object Injection {
     return PhotosRepository()
   }
 
-  fun provideViewModelFactory(): PhotosViewModelFactory {
+  fun provideViewModelFactory(lifecycle: Lifecycle): PhotosViewModelFactory {
     val repository = provideRepository()
+    repository.registerLifecycle(lifecycle)
     return PhotosViewModelFactory(repository)
   }
 }

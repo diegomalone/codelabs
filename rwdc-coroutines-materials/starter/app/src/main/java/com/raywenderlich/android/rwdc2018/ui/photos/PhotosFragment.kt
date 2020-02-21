@@ -56,7 +56,7 @@ class PhotosFragment : Fragment() {
   override fun onAttach(context: Context?) {
     super.onAttach(context)
 
-    val viewModelFactory = Injection.provideViewModelFactory()
+    val viewModelFactory = Injection.provideViewModelFactory(lifecycle)
     viewModel = ViewModelProviders.of(this, viewModelFactory).get(PhotosViewModel::class.java)
   }
 
