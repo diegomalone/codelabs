@@ -86,3 +86,6 @@ lint/tmp/
 
 # macOS Files
 .DS_Store
+
+# Keys file
+keys.gradle
