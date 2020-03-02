@@ -31,40 +31,81 @@
 package com.raywenderlich.android.octocompose.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
+import androidx.compose.Model
 import androidx.compose.unaryPlus
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.ui.core.Clip
-import androidx.ui.core.Text
-import androidx.ui.core.dp
-import androidx.ui.core.setContent
+import androidx.ui.core.*
 import androidx.ui.foundation.DrawImage
+import androidx.ui.foundation.VerticalScroller
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
-import androidx.ui.layout.Container
-import androidx.ui.layout.CrossAxisAlignment
-import androidx.ui.layout.FlexRow
-import androidx.ui.layout.Spacing
+import androidx.ui.layout.*
+import androidx.ui.material.Divider
 import androidx.ui.material.MaterialTheme
+import androidx.ui.material.TopAppBar
 import androidx.ui.res.imageResource
 import com.raywenderlich.android.octocompose.R
 import com.raywenderlich.android.octocompose.model.Member
-import com.raywenderlich.android.octocompose.model.PreviewMember
 
 class TeamMembersActivity : AppCompatActivity() {
+
+  private val memberState = MemberState()
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     val viewModel = ViewModelProviders.of(this)[TeamMembersViewModel::class.java]
     viewModel.getMembers("raywenderlich").observe(this, Observer<List<Member>> { members ->
-      Log.i("TeamMembersActivity", members.toString())
+      memberState.members = members
     })
 
     setContent {
-      MaterialTheme {
-        TeamMember(PreviewMember.member)
+      TeamMemberScreen {
+        TeamMemberContent(memberState)
+      }
+    }
+  }
+}
+
+@Model
+class MemberState(var members: List<Member> = listOf())
+
+@Composable
+fun TeamMemberScreen(children: @Composable() () -> Unit) {
+  MaterialTheme {
+    children()
+  }
+}
+
+@Composable
+fun TeamMemberContent(
+  memberState: MemberState = MemberState()
+) {
+  FlexColumn {
+    inflexible {
+      TopAppBar(
+        title = {
+          Text(text = "OctoCompose")
+        }
+      )
+    }
+    expanded(1f) {
+      TeamMembers(memberState = memberState)
+    }
+  }
+}
+
+@Composable
+fun TeamMembers(memberState: MemberState) {
+  if (memberState.members.isNotEmpty()) {
+    VerticalScroller {
+      Column {
+        memberState.members.forEach { member ->
+          TeamMember(member = member)
+          MemberDivider()
+        }
       }
     }
   }
@@ -91,5 +132,12 @@ fun TeamMember(member: Member) {
     inflexible {
       Text(text = member.type)
     }
+  }
+}
+
+@Composable
+private fun MemberDivider() {
+  Opacity(0.08f) {
+    Divider()
   }
 }
