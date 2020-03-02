@@ -34,13 +34,24 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
+import androidx.compose.unaryPlus
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.ui.core.Clip
 import androidx.ui.core.Text
+import androidx.ui.core.dp
 import androidx.ui.core.setContent
+import androidx.ui.foundation.DrawImage
+import androidx.ui.foundation.shape.corner.RoundedCornerShape
+import androidx.ui.layout.Container
+import androidx.ui.layout.CrossAxisAlignment
+import androidx.ui.layout.FlexRow
+import androidx.ui.layout.Spacing
 import androidx.ui.material.MaterialTheme
-import androidx.ui.tooling.preview.Preview
+import androidx.ui.res.imageResource
+import com.raywenderlich.android.octocompose.R
 import com.raywenderlich.android.octocompose.model.Member
+import com.raywenderlich.android.octocompose.model.PreviewMember
 
 class TeamMembersActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,21 +64,32 @@ class TeamMembersActivity : AppCompatActivity() {
 
     setContent {
       MaterialTheme {
-        Greeting("Android")
+        TeamMember(PreviewMember.member)
       }
     }
   }
 }
 
 @Composable
-fun Greeting(name: String) {
-  Text(text = "Hello $name!")
-}
+fun TeamMember(member: Member) {
+  val image = +image(member.avatarUrl) ?: +imageResource(R.drawable.placeholder)
 
-@Preview
-@Composable
-fun DefaultPreview() {
-  MaterialTheme {
-    Greeting("Android")
+  FlexRow(
+    crossAxisAlignment = CrossAxisAlignment.Center,
+    modifier = Spacing(8.dp)
+  ) {
+    inflexible {
+      Clip(shape = RoundedCornerShape(8.dp)) {
+        Container(width = 80.dp, height = 80.dp, modifier = Spacing(right = 8.dp)) {
+          DrawImage(image)
+        }
+      }
+    }
+    expanded(1f) {
+      Text(text = member.login)
+    }
+    inflexible {
+      Text(text = member.type)
+    }
   }
 }

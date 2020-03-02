@@ -39,14 +39,14 @@ dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
   implementation 'androidx.appcompat:appcompat:1.1.0'
-  implementation 'androidx.core:core-ktx:1.1.0'
+  implementation 'androidx.core:core-ktx:1.2.0'
   implementation 'androidx.ui:ui-layout:0.1.0-dev02'
   implementation 'androidx.ui:ui-material:0.1.0-dev02'
   implementation 'androidx.ui:ui-tooling:0.1.0-dev02'
 
   implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
   implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-  implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+  implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
   implementation 'io.coil-kt:coil:0.8.0'
 
