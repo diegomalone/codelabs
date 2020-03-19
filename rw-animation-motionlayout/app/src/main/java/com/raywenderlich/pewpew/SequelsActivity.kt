@@ -31,12 +31,31 @@
 package com.raywenderlich.pewpew
 
 import android.os.Bundle
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_sequels.*
 
 class SequelsActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_sequels)
+
+    episode7.setOnClickListener {
+      resetAndShowName(R.string.episode7)
+    }
+
+    episode8.setOnClickListener {
+      resetAndShowName(R.string.episode8)
+    }
+
+    episode9.setOnClickListener {
+      resetAndShowName(R.string.episode9)
+    }
+  }
+
+  private fun resetAndShowName(@StringRes name: Int) {
+    episodeName.text = getString(name)
+    motionLayout.transitionToStart()
   }
 }
