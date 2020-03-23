@@ -31,6 +31,7 @@
 package com.raywenderlich.android.creaturemon.app
 
 import android.app.Application
+import android.arch.persistence.room.Room
 import com.raywenderlich.android.creaturemon.model.room.CreatureDatabase
 
 class CreaturemonApplication : Application() {
@@ -41,6 +42,8 @@ class CreaturemonApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    // TODO: init database
+
+    database = Room.databaseBuilder(this, CreatureDatabase::class.java, "creature_database")
+        .build()
   }
 }
