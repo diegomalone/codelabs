@@ -99,7 +99,7 @@ class CreatureViewModelTest {
     creatureViewModel.strength = creature.attributes.strength
     creatureViewModel.endurance = creature.attributes.endurance
     creatureViewModel.drawable = creature.drawable
-    creatureViewModel.name = creature.name
+    creatureViewModel.name.set(creature.name)
   }
 
   companion object {
