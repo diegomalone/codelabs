@@ -4,6 +4,7 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import com.raywenderlich.android.creaturemon.model.Creature
 import com.raywenderlich.android.creaturemon.model.CreatureAttributes
 import com.raywenderlich.android.creaturemon.model.CreatureGenerator
+import com.raywenderlich.android.creaturemon.model.CreatureRepository
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -23,10 +24,13 @@ class CreatureViewModelTest {
   @Mock
   lateinit var mockGenerator: CreatureGenerator
 
+  @Mock
+  lateinit var creatureRepository: CreatureRepository
+
   @Before
   fun setup() {
     MockitoAnnotations.initMocks(this)
-    creatureViewModel = CreatureViewModel(mockGenerator)
+    creatureViewModel = CreatureViewModel(mockGenerator, creatureRepository)
   }
 
   @Test
@@ -43,5 +47,73 @@ class CreatureViewModelTest {
     creatureViewModel.updateCreature()
 
     assertEquals(stubCreature, creatureViewModel.creature)
+  }
+
+  @Test
+  fun testCantSaveCreatureWithBlankName() {
+    setViewModelCreatureParameters(stubCreature.copy(name = ""))
+
+    val canSaveCreature = creatureViewModel.canSaveCreature()
+
+    assertEquals(false, canSaveCreature)
+  }
+
+  @Test
+  fun testCantSaveCreatureWithoutIntelligence() {
+    setViewModelCreatureParameters(stubCreature.copy(attributes = stubAttributes.copy(intelligence = 0)))
+
+    val canSaveCreature = creatureViewModel.canSaveCreature()
+
+    assertEquals(false, canSaveCreature)
+  }
+
+  @Test
+  fun testCantSaveCreatureWithoutStrength() {
+    setViewModelCreatureParameters(stubCreature.copy(attributes = stubAttributes.copy(strength = 0)))
+
+    val canSaveCreature = creatureViewModel.canSaveCreature()
+
+    assertEquals(false, canSaveCreature)
+  }
+
+  @Test
+  fun testCantSaveCreatureWithoutEndurance() {
+    setViewModelCreatureParameters(stubCreature.copy(attributes = stubAttributes.copy(endurance = 0)))
+
+    val canSaveCreature = creatureViewModel.canSaveCreature()
+
+    assertEquals(false, canSaveCreature)
+  }
+
+  @Test
+  fun testCantSaveCreatureWithoutDrawable() {
+    setViewModelCreatureParameters(stubCreature.copy(drawable = 0))
+
+    val canSaveCreature = creatureViewModel.canSaveCreature()
+
+    assertEquals(false, canSaveCreature)
+  }
+
+  private fun setViewModelCreatureParameters(creature: Creature) {
+    creatureViewModel.intelligence = creature.attributes.intelligence
+    creatureViewModel.strength = creature.attributes.strength
+    creatureViewModel.endurance = creature.attributes.endurance
+    creatureViewModel.drawable = creature.drawable
+    creatureViewModel.name = creature.name
+  }
+
+  companion object {
+    val stubAttributes = CreatureAttributes(
+        intelligence = 10,
+        strength = 3,
+        endurance = 7
+    )
+
+    val stubCreature = Creature(
+        stubAttributes,
+        87,
+        "Stub Creature",
+        1
+    )
   }
 }
