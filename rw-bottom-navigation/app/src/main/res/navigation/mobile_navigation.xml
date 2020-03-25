@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/mobile_navigation"
+    app:startDestination="@id/navigation_monster">
+
+    <fragment
+        android:id="@+id/navigation_monster"
+        android:name="com.raywenderlich.feedmenav.MonsterFragment"
+        android:label="@string/monster" />
+    <fragment
+        android:id="@+id/navigation_slug"
+        android:name="com.raywenderlich.feedmenav.SlugFragment"
+        android:label="@string/slug" />
+</navigation>
