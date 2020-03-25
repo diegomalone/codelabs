@@ -40,21 +40,24 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-    val navView : BottomNavigationView = findViewById(R.id.nav_view)
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
-    val navController = findNavController(R.id.nav_host_fragment)
+        val navController = findNavController(R.id.nav_host_fragment)
 
-    val appBarConfiguration = AppBarConfiguration(
-      setOf(
-        R.id.navigation_monster, R.id.navigation_slug
-      )
-    )
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_monster,
+                R.id.navigation_slug,
+                R.id.navigation_pizza,
+                R.id.navigation_cake
+            )
+        )
 
-    setupActionBarWithNavController(navController, appBarConfiguration)
-    navView.setupWithNavController(navController)
-  }
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+    }
 }
