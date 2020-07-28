@@ -34,12 +34,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class AppTest {
 
-    @After
-    fun tearDown() {
-        // Remove logs after the test finishes
-        ServiceLocator(getInstrumentation().targetContext).loggerLocalDataSource.removeLogs()
-    }
-
     @Test
     fun happyPath() {
         ActivityScenario.launch(MainActivity::class.java)
