@@ -17,14 +17,15 @@
 package com.example.android.codelabs.paging.ui
 
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android.codelabs.paging.model.Repo
 
 /**
  * Adapter for the list of repositories.
  */
-class ReposAdapter : ListAdapter<Repo, androidx.recyclerview.widget.RecyclerView.ViewHolder>(REPO_COMPARATOR) {
+class ReposAdapter : PagingDataAdapter<Repo, RecyclerView.ViewHolder>(REPO_COMPARATOR) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return RepoViewHolder.create(parent)
@@ -40,10 +41,10 @@ class ReposAdapter : ListAdapter<Repo, androidx.recyclerview.widget.RecyclerView
     companion object {
         private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<Repo>() {
             override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean =
-                    oldItem.fullName == newItem.fullName
+                oldItem.fullName == newItem.fullName
 
             override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean =
-                    oldItem == newItem
+                oldItem == newItem
         }
     }
 }
