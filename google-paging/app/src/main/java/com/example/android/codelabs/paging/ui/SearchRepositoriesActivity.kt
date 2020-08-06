@@ -18,11 +18,15 @@ package com.example.android.codelabs.paging.ui
 
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.android.codelabs.paging.Injection
 import com.example.android.codelabs.paging.databinding.ActivitySearchRepositoriesBinding
@@ -57,6 +61,8 @@ class SearchRepositoriesActivity : AppCompatActivity() {
         initAdapter()
         val query = savedInstanceState?.getString(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
 
+        binding.retryButton.setOnClickListener { adapter.retry() }
+
         search(query)
         initSearch(query)
     }
@@ -71,6 +77,32 @@ class SearchRepositoriesActivity : AppCompatActivity() {
             header = ReposLoadStateAdapter { adapter.retry() },
             footer = ReposLoadStateAdapter { adapter.retry() }
         )
+
+        adapter.addLoadStateListener { loadState ->
+            if (loadState.refresh !is LoadState.NotLoading) {
+                binding.list.visibility = GONE
+                binding.progressBar.isVisible = loadState.refresh is LoadState.Loading
+                binding.retryButton.isVisible = loadState.refresh is LoadState.Error
+            } else {
+                binding.list.visibility = VISIBLE
+                binding.progressBar.visibility = GONE
+                binding.retryButton.visibility = GONE
+
+                val errorState = when {
+                    loadState.append is LoadState.Error -> {
+                        loadState.append as LoadState.Error
+                    }
+                    loadState.prepend is LoadState.Error -> {
+                        loadState.prepend as LoadState.Error
+                    }
+                    else -> null
+                }
+
+                errorState?.let {
+                    Toast.makeText(this, "\uD83D\uDE28 Wooops ${it.error}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun initSearch(query: String) {
@@ -100,16 +132,6 @@ class SearchRepositoriesActivity : AppCompatActivity() {
                 binding.list.scrollToPosition(0)
                 search(it.toString())
             }
-        }
-    }
-
-    private fun showEmptyList(show: Boolean) {
-        if (show) {
-            binding.emptyList.visibility = View.VISIBLE
-            binding.list.visibility = View.GONE
-        } else {
-            binding.emptyList.visibility = View.GONE
-            binding.list.visibility = View.VISIBLE
         }
     }
 
